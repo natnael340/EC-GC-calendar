@@ -1,8 +1,10 @@
 const date = new Date();
+const callander = new CalanderConverter()
 let month = date.getMonth() + 1,
   year = date.getFullYear(),
   week = date.getDay() == 0 ? 7 : date.getDay(),
   day = date.getDate();
+let [year_ec, month_ec, day_ec] = callander.gregorianToEthiopic(year, month, day);
 document.getElementsByTagName("input")[1].checked = false;
 const year_e = document.getElementById("year_e").children[0];
 const months_e = document.getElementById("months");
@@ -11,25 +13,27 @@ const month_e = document.getElementById("month_e");
 const weeks_e = document.getElementsByClassName("weekdays")[0];
 const days_e = document.getElementsByClassName("days")[0];
 let ctype = "GC";
+
+
 const EC_months = {
-  1: "Meskerem",
-  2: "Tikimt",
-  3: "Hidar",
-  4: "Tahsas",
-  5: "Tir",
-  6: "Yekatit",
-  7: "Megabit",
-  8: "Meyazya",
-  9: "Ginbot",
-  10: "Sene",
-  11: "Hamle",
-  12: "Nehase",
-  13: "Pagume",
+  1: "መስከረም",
+  2: "ጥቅምት",
+  3: "ሕዳር",
+  4: "ታሕሣስ",
+  5: "ጥር",
+  6: "የካቲት",
+  7: "መጋቢት",
+  8: "ሚያዚያ",
+  9: "ግንቦት",
+  10: "ሰኔ",
+  11: "ሐምሌ",
+  12: "ነሐሴ",
+  13: "ጳጉሜ",
 };
 const EC_days = {
   1: "ሰኞ",
   2: "ማክሰኞ",
-  3: "ሮብ",
+  3: "ረቡዕ",
   4: "ኀሙስ",
   5: "ዐርብ",
   6: "ቅዳሜ",
@@ -171,7 +175,7 @@ const fill_date = () => {
       if (i < date.getMonth() + 1) {
         m.style.cursor = "auto";
       }
-      m.onclick = function (e) {
+      m.onclick = function(e) {
         selectMonth(1, e.target.innerText);
       };
       m.innerText = GC_dates[i].name;
@@ -182,7 +186,6 @@ const fill_date = () => {
       n.innerText = GC_days[i];
       weeks_e.appendChild(n);
     }
-    console.log(year, month);
     let days_start = new Date(year, month - 1, 1).getDay();
     days_start = days_start == 0 ? 7 : days_start;
     let j = 1;
@@ -194,7 +197,7 @@ const fill_date = () => {
         days_e.append(node);
         j++;
       } else {
-        if (j - days_start + 1 < date.getDate()) {
+        if (j - days_start + 1 < date.getDate() && date.getMonth()+1 == month) {
           node.style.color = "#bbb";
           node.style.cursor = "auto";
         } else {
@@ -223,11 +226,11 @@ const fill_date = () => {
     for (i in EC_months) {
       let m = document.createElement("li");
       if (
-        i < gc_to_ec(date.getDate(), date.getMonth() + 1, date.getFullYear())[1]
+        i < callander.gregorianToEthiopic(date.getFullYear(), date.getMonth() + 1, date.getDate())[1]
       ) {
         m.style.cursor = "auto";
       }
-      m.onclick = function (e) {
+      m.onclick = function(e) {
         selectMonth(1, e.target.innerText);
       };
       m.innerText = EC_months[i];
@@ -238,7 +241,7 @@ const fill_date = () => {
       n.innerText = EC_days[i];
       weeks_e.appendChild(n);
     }
-    let [gd, gm, gy] = ec_to_gc(1, month, year);
+    let [gy, gm, gd] = callander.ethiopicToGregorian(year, month, 1);
     let days_start = new Date(gy, gm - 1, gd).getDay();
     days_start = days_start == 0 ? 7 : days_start;
     let j = 1;
@@ -252,7 +255,7 @@ const fill_date = () => {
       } else {
         if (
           j - days_start + 1 <
-          gc_to_ec(date.getDate(), date.getMonth() + 1, date.getFullYear())[0]
+          day_ec && month == month_ec
         ) {
           node.style.color = "#bbb";
           node.style.cursor = "auto";
@@ -286,8 +289,17 @@ const selectMonth = (e, c) => {
     if (ctype == "GC") {
       for (i in GC_dates) {
         if (GC_dates[i].name == c) {
-          month = i;
-          month_e.innerText = c;
+          if(i > date.getMonth() +1){
+            day = 1
+            month = i;
+            month_e.innerText = c;
+          }
+          else {
+            month = date.getMonth()+1;
+            month_e.innerText = GC_dates[month].name
+            day = date.getDate();
+          }
+          
           fill_date();
         }
       }
@@ -295,8 +307,16 @@ const selectMonth = (e, c) => {
       for (i in EC_months) {
         console.log(c, EC_months[i], EC_months[i] == c);
         if (EC_months[i] == c) {
-          month = i;
-          month_e.innerText = c;
+          if(i > month_ec){
+            day = 1
+            month = i;
+            month_e.innerText = c;
+          }
+          else{
+            month = month_ec;
+            month_e.innerText = EC_months[month]
+            day = day_ec;
+          }
           fill_date();
         }
       }
@@ -330,14 +350,15 @@ const selectDay = (d) => {
 };
 const toggleCalander = (a) => {
   if (a.checked) {
-    let [d, m, y] = gc_to_ec(day, month, year);
+    let [y, m, d] = callander.gregorianToEthiopic(year, month, day);
     day = d;
     month = m;
     year = y;
     ctype = "EC";
+    console.log(y,m,d)
     fill_date();
   } else {
-    let [d, m, y] = ec_to_gc(day, month, year);
+    let [y, m, d] = callander.ethiopicToGregorian(year, month, day);
     day = d;
     month = m;
     year = y;
