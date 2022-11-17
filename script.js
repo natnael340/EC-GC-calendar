@@ -127,7 +127,6 @@ const gc_to_ec = (d, m, y) => {
 const ec_to_gc = (d, m, y) => {
   let mg, yg, dg;
   let diff = month_diff[m];
-  console.log(diff);
   dg = d + diff;
   if (m + 8 > 12) {
     if (dg > GC_dates[m - 4].days) {
@@ -189,9 +188,7 @@ const fill_date = () => {
     let days_start = new Date(year, month - 1, 1).getDay();
     days_start = days_start == 0 ? 7 : days_start;
     let j = 1;
-    console.log(days_start);
-    while (j <= GC_dates[date.getMonth() + 1].days + days_start) {
-      console.log("here");
+    while (j <= GC_dates[month].days + days_start - 1) {
       let node = document.createElement("li");
       if (j < days_start) {
         days_e.append(node);
@@ -221,7 +218,6 @@ const fill_date = () => {
       years_e.appendChild(y);
     }
     year_e.innerText = year;
-    console.log(month);
     month_e.innerText = EC_months[month];
     for (i in EC_months) {
       let m = document.createElement("li");
@@ -245,9 +241,7 @@ const fill_date = () => {
     let days_start = new Date(gy, gm - 1, gd).getDay();
     days_start = days_start == 0 ? 7 : days_start;
     let j = 1;
-    console.log(days_start);
-    while (j <= 30 + days_start) {
-      console.log("here");
+    while (j <= (month==13 ? (year_ec % 4 == 0 ? 6 : 5) : 30) + days_start -1) {
       let node = document.createElement("li");
       if (j < days_start) {
         days_e.append(node);
@@ -289,11 +283,11 @@ const selectMonth = (e, c) => {
     if (ctype == "GC") {
       for (i in GC_dates) {
         if (GC_dates[i].name == c) {
-          if(i > date.getMonth() +1){
+          if(i > date.getMonth() +1 || year > date.getFullYear()){
             day = 1
             month = i;
             month_e.innerText = c;
-          }
+          } 
           else {
             month = date.getMonth()+1;
             month_e.innerText = GC_dates[month].name
@@ -305,9 +299,8 @@ const selectMonth = (e, c) => {
       }
     } else {
       for (i in EC_months) {
-        console.log(c, EC_months[i], EC_months[i] == c);
         if (EC_months[i] == c) {
-          if(i > month_ec){
+          if(i > month_ec || year > year_ec){
             day = 1
             month = i;
             month_e.innerText = c;
@@ -335,6 +328,7 @@ const selectYear = (e, c) => {
     fill_date();
     year = c;
     year_e.innerHTML = c;
+    selectMonth(null,ctype == "GC" ? GC_dates[month] : EC_months[month])
     years_e.style.display = "none";
     return;
   }
@@ -355,7 +349,6 @@ const toggleCalander = (a) => {
     month = m;
     year = y;
     ctype = "EC";
-    console.log(y,m,d)
     fill_date();
   } else {
     let [y, m, d] = callander.ethiopicToGregorian(year, month, day);
