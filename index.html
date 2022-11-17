@@ -2,44 +2,46 @@
 <html>
 
 <head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width">
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width" />
   <title>replit</title>
   <link href="style.css" rel="stylesheet" type="text/css" />
+  <script src="calander.js"></script>
 </head>
 
 <body>
   <div style="position: relative">
-    <input onfocus="enableMonth(true)" readonly>
+    <input onfocus="enableMonth(true)" readonly />
   </div>
   <div id="calander">
     <div class="month">
-      <ul style="position: relative;">
-        <li id="year_e" onclick="selectYear(1)"><span style="font-size:18px">2021</span></li>
-        <ul id="years" class="overlayoption">
-          
-        </ul>
+      <ul style="position: relative">
+        <li id="year_e" onclick="selectYear(1)">
+          <span style="font-size: 18px">2021</span>
+        </li>
+        <ul id="years" class="overlayoption"></ul>
         <li id="month_e" onclick="selectMonth(1)">August</li>
-        <ul id="months" class="overlayoption">
-        </ul>
-
+        <ul id="months" class="overlayoption"></ul>
       </ul>
-      <div id="cselector" style="position: absolute; right: 10px; top: 10px;display: flex; flex-direction: row;">
+      <div id="cselector" style="
+            position: absolute;
+            right: 10px;
+            top: 10px;
+            display: flex;
+            flex-direction: row;
+          ">
         <span>GC</span>
         <label class="switch">
-          <input type="checkbox">
+          <input type="checkbox" onclick="toggleCalander(this)" />
           <span class="slider round"></span>
         </label>
         <span>EC</span>
       </div>
     </div>
 
-    <ul class="weekdays">
+    <ul class="weekdays"></ul>
 
-    </ul>
-
-    <ul class="days">
-    </ul>
+    <ul class="days"></ul>
   </div>
 
   <script src="script.js"></script>
