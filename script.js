@@ -5,7 +5,7 @@ let month = date.getMonth() + 1,
   week = date.getDay() == 0 ? 7 : date.getDay(),
   day = date.getDate();
 let [year_ec, month_ec, day_ec] = callander.gregorianToEthiopic(year, month, day);
-document.getElementsByTagName("input")[1].checked = false;
+document.getElementById("switch001").checked = false;
 const year_e = document.getElementById("year_e").children[0];
 const months_e = document.getElementById("months");
 const years_e = document.getElementById("years");
@@ -105,56 +105,19 @@ const GC_dates = {
 };
 const month_diff = [10, 10, 9, 9, 8, 7, 9, 8, 8, 7, 7, 9];
 const set_date = (day, month, year) => {
-  const input = document.getElementsByTagName("input")[0];
+  const input = document.getElementById("datef");
+  const inputs = document.getElementById("date")
+  if (ctype == "GC")
+    inputs.value = `${day}/${month}/${year}`;
+  else {
+    let [gy, gm, gd] = callander.ethiopicToGregorian(year, month, day);
+    inputs.value = `${gd}/${gm}/${gy}`;
+  }
   input.value = `${day}/${month}/${year}`;
 };
 set_date(day, month, year);
 
-const gc_to_ec = (d, m, y) => {
-  let month_et, year_et;
-  let diff = month_diff[m + 4 >= 12 ? m + 4 - 12 : m + 4];
-  let day_et = d - diff;
-  if (day_et < 0) {
-    month_et = m - 7;
-    day_et = 30 + day_et;
-  } else month_et = m - 8;
-  if (month_et < 0) {
-    month_et = month_et + 13;
-    year_et = y - 8;
-  } else year_et = y - 7;
-  return [day_et, month_et, year_et];
-};
-const ec_to_gc = (d, m, y) => {
-  let mg, yg, dg;
-  let diff = month_diff[m];
-  dg = d + diff;
-  if (m + 8 > 12) {
-    if (dg > GC_dates[m - 4].days) {
-      mg = m - 3;
-      dg = dg - GC_dates[m - 4].days;
-    } else {
-      mg = m - 4;
-    }
-    yg = y + 8;
-  } else if (m + 8 == 12) {
-    if (dg > GC_dates[m + 8].days) {
-      mg = 1;
-      dg = dg - GC_dates[12].days;
-      yg = y + 8;
-    } else {
-      mg = m + 8;
-      yg = y + 7;
-    }
-  } else {
-    if (dg > GC_dates[m + 8].days) {
-      mg = m + 9;
-      dg = dg - GC_dates[m + 8].days;
-    } else mg = m + 8;
-    yg = y + 7;
-  }
 
-  return [dg, mg, yg];
-};
 const fill_date = () => {
   days_e.innerHTML = "";
   weeks_e.innerHTML = "";
@@ -186,15 +149,18 @@ const fill_date = () => {
       weeks_e.appendChild(n);
     }
     let days_start = new Date(year, month - 1, 1).getDay();
+    let day_end = new Date(year, month - 1, GC_dates[month].days).getDay()
+    day_end = day_end == 0 ? day_end : 7 - day_end
     days_start = days_start == 0 ? 7 : days_start;
     let j = 1;
-    while (j <= GC_dates[month].days + days_start - 1) {
+    while (j < GC_dates[month].days + days_start + day_end) {
       let node = document.createElement("li");
-      if (j < days_start) {
+      if (j < days_start || j >= GC_dates[month].days + days_start) {
         days_e.append(node);
         j++;
-      } else {
-        if (j - days_start + 1 < date.getDate() && date.getMonth()+1 == month) {
+      }
+      else {
+        if (j - days_start + 1 < date.getDate() && date.getMonth() + 1 == month) {
           node.style.color = "#bbb";
           node.style.cursor = "auto";
         } else {
@@ -209,6 +175,7 @@ const fill_date = () => {
         j++;
       }
     }
+
   } else {
     //let day_et, month_et, year_et = gc_to_ec();
     for (i in EC_years) {
@@ -239,11 +206,15 @@ const fill_date = () => {
     }
     let [gy, gm, gd] = callander.ethiopicToGregorian(year, month, 1);
     let days_start = new Date(gy, gm - 1, gd).getDay();
+    [gy, gm, gd] = month == 13 ? (year_ec % 4 == 0 ? callander.ethiopicToGregorian(year, month, 6) : callander.ethiopicToGregorian(year, month, 5)) : callander.ethiopicToGregorian(year, month, 30)
+    let day_end = new Date(gy, gm - 1, gd).getDay()
+    day_end = day_end == 0 ? 0 : 7 - day_end;
     days_start = days_start == 0 ? 7 : days_start;
     let j = 1;
-    while (j <= (month==13 ? (year_ec % 4 == 0 ? 6 : 5) : 30) + days_start -1) {
+    let monthdays = (month == 13 ? (year_ec % 4 == 0 ? 6 : 5) : 30)
+    while (j < monthdays + days_start + day_end) {
       let node = document.createElement("li");
-      if (j < days_start) {
+      if (j < days_start || j >= monthdays + days_start) {
         days_e.append(node);
         j++;
       } else {
@@ -283,29 +254,29 @@ const selectMonth = (e, c) => {
     if (ctype == "GC") {
       for (i in GC_dates) {
         if (GC_dates[i].name == c) {
-          if(i > date.getMonth() +1 || year > date.getFullYear()){
+          if (i > date.getMonth() + 1 || year > date.getFullYear()) {
             day = 1
             month = i;
             month_e.innerText = c;
-          } 
+          }
           else {
-            month = date.getMonth()+1;
+            month = date.getMonth() + 1;
             month_e.innerText = GC_dates[month].name
             day = date.getDate();
           }
-          
+
           fill_date();
         }
       }
     } else {
       for (i in EC_months) {
         if (EC_months[i] == c) {
-          if(i > month_ec || year > year_ec){
+          if (i > month_ec || year > year_ec) {
             day = 1
             month = i;
             month_e.innerText = c;
           }
-          else{
+          else {
             month = month_ec;
             month_e.innerText = EC_months[month]
             day = day_ec;
@@ -328,7 +299,7 @@ const selectYear = (e, c) => {
     fill_date();
     year = c;
     year_e.innerHTML = c;
-    selectMonth(null,ctype == "GC" ? GC_dates[month] : EC_months[month])
+    selectMonth(null, ctype == "GC" ? GC_dates[month] : EC_months[month])
     years_e.style.display = "none";
     return;
   }
@@ -344,14 +315,14 @@ const selectDay = (d) => {
 };
 const toggleCalander = (a) => {
   if (a.checked) {
-    let [y, m, d] = callander.gregorianToEthiopic(year, month, day);
+    let [y, m, d] = callander.gregorianToEthiopic(parseInt(year), parseInt(month), parseInt(day));
     day = d;
     month = m;
     year = y;
     ctype = "EC";
     fill_date();
   } else {
-    let [y, m, d] = callander.ethiopicToGregorian(year, month, day);
+    let [y, m, d] = callander.ethiopicToGregorian(parseInt(year), parseInt(month), parseInt(day));
     day = d;
     month = m;
     year = y;

@@ -11,28 +11,22 @@
 
 <body>
   <div style="position: relative">
-    <input onfocus="enableMonth(true)" readonly />
+    <input id="datef" onfocus="enableMonth(true)" />
   </div>
   <div id="calander">
     <div class="month">
       <ul style="position: relative">
         <li id="year_e" onclick="selectYear(1)">
-          <span style="font-size: 18px">2021</span>
+          <span style="font-size: 16px">2021</span>
         </li>
         <ul id="years" class="overlayoption"></ul>
         <li id="month_e" onclick="selectMonth(1)">August</li>
         <ul id="months" class="overlayoption"></ul>
       </ul>
-      <div id="cselector" style="
-            position: absolute;
-            right: 10px;
-            top: 10px;
-            display: flex;
-            flex-direction: row;
-          ">
+      <div id="cselector">
         <span>GC</span>
         <label class="switch">
-          <input type="checkbox" onclick="toggleCalander(this)" />
+          <input id="switch001" type="checkbox" onclick="toggleCalander(this)" />
           <span class="slider round"></span>
         </label>
         <span>EC</span>
@@ -43,7 +37,9 @@
 
     <ul class="days"></ul>
   </div>
-
+  <div>
+    <input id="date" hidden />
+  </div>
   <script src="script.js"></script>
 
   <!--

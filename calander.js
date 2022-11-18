@@ -62,6 +62,7 @@ class CalanderConverter {
   isDateSet() {
     return this.dateIsUnset ? false : true;
   }
+  /*
   ethiopicToGregorian(era) {
     if (!this.isDateSet()) {
       throw "Unset date.";
@@ -81,6 +82,7 @@ class CalanderConverter {
     }
     return this.ethiopicToGregorian(this.year, this.month, this.day);
   }
+  */
   ethiopicToGregorian(year, month, day) {
     if (!this.isEraSet()) {
       if (year <= 0) {
@@ -94,13 +96,13 @@ class CalanderConverter {
     let jdn = this.ethiopicToJDN(year, month, day);
     return this.jdnToGregorian(jdn);
   }
-
-  gregorianToEthiopic() {
-    if (this.dateIsUnset) {
-      throw "Unset date.";
-    }
-    return this.gregorianToEthiopic(this.year, this.month, this.day);
-  }
+  /*
+    gregorianToEthiopic() {
+      if (this.dateIsUnset) {
+        throw "Unset date.";
+      }
+      return this.gregorianToEthiopic(this.year, this.month, this.day);
+    }*/
   gregorianToEthiopic(year, month, day) {
     let jdn = this.gregorianToJDN(year, month, day);
 

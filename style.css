@@ -60,9 +60,10 @@ body {font-family: Verdana, sans-serif;}
 
 /* Days (1-31) */
 .days {
-  padding: 10px 0;
+  padding: 5px 0;
   background: #eee;
   margin: 0;
+  text-align: flex-start;
 }
 
 .days li {
@@ -146,6 +147,16 @@ input:checked + .slider:before {
 #calander {
   position: absolute;
   display: none;
+  width: 60vh;
+  z-index: 99;
+}
+#calander ul {list-style-type: none;}
+#cselector {
+   position: absolute;
+    right: 10px;
+    top: 10px;
+            display: flex;
+            flex-direction: row;
 }
 #cselector span {
   color: white;
